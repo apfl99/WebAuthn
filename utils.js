@@ -48,7 +48,7 @@ let generateServerMakeCredRequest = (username, displayName, id) => {
         challenge: randomBase64URLBuffer(32),
 
         rp: {
-            name: "FIDO Examples Corporation"
+            name: "WebAuthn Test Server"
         },
 
         user: {
@@ -63,7 +63,10 @@ let generateServerMakeCredRequest = (username, displayName, id) => {
             {
                 type: "public-key", alg: -7 // "ES256" IANA COSE Algorithms registry
             }
-        ]
+        ],
+
+
+
     }
 }
 
@@ -195,9 +198,12 @@ let parseMakeCredAuthData = (buffer) => {
     return {rpIdHash, flagsBuf, flags, counter, counterBuf, aaguid, credID, COSEPublicKey}
 }
 
+
 let verifyAuthenticatorAttestationResponse = (webAuthnResponse) => {
     let attestationBuffer = base64url.toBuffer(webAuthnResponse.response.attestationObject);
     let ctapMakeCredResp  = cbor.decodeAllSync(attestationBuffer)[0];
+
+    console.log(ctapMakeCredResp)
 
     let response = {'verified': false};
     if(ctapMakeCredResp.fmt === 'fido-u2f') {
