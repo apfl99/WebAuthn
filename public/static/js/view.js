@@ -48,10 +48,6 @@ $("#button-logout").click(() => {
 });
 
 
-$("#button-add-credential").click(() => {
-	register(username);
-});
-
 $("#button-register").click(() => {
 	const username = $("#username")[0].value;
 	if(!username) {
