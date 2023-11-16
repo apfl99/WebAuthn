@@ -1,41 +1,58 @@
-const express       = require('express');
-const bodyParser    = require('body-parser');
-const cookieSession = require('cookie-session');
-const cookieParser  = require('cookie-parser');
-const urllib        = require('url');
-const path          = require('path');
-const crypto        = require('crypto');
-const x509          = require('@fidm/x509');
-const iso_3166_1    = require('iso-3166-1');
+const
+	express       	= require("express"),
+	bodyParser    	= require("body-parser"),
+	cookieSession 	= require("cookie-session"),
+	path          	= require("path"),
+	crypto        	= require("crypto"),
 
-const config        = require('./config.json');
-const defaultroutes = require('./routes/default');
-const passwordauth  = require('./routes/password');
-const webuathnauth  = require('./routes/webauthn.js');
+	config        	= require("./config"),
 
-const app           = express();
+	defaultroutes 	= require("./routes/default"),
+	webuathnroutes  = require("./routes/webauthn"),
+	tokenroutes   	= require("./routes/token"),
+
+	app           	= express();
 
 app.use(bodyParser.json());
 
-/* ----- session ----- */
+// Sessions
 app.use(cookieSession({
-  name: 'session',
-  keys: [crypto.randomBytes(32).toString('hex')],
+	name: "session",
+	keys: [crypto.randomBytes(32).toString("hex")],
+	//keys: database.getData("/keys"),
+	// Cookie Options
+	maxAge: config.cookieMaxAge
+}));
 
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
-app.use(cookieParser())
+//console.log(database.getData("/keys"));
 
-/* ----- serve static ----- */
-app.use(express.static(path.join(__dirname, 'static')));
+// Static files (./static)
+app.use(express.static(path.join(__dirname, "public/static")));
 
-app.use('/', defaultroutes)
-app.use('/password', passwordauth)
-app.use('/webauthn', webuathnauth)
+// Routes
+app.use("/", defaultroutes);
+app.use("/webauthn", webuathnroutes);
+app.use("/token", tokenroutes);
 
-const port = config.port || 3000;
-app.listen(port);
+const port = config.port;
+
+// Local development
+if (config.mode === "development") {
+	const https = require("https");
+	const fs = require("fs");
+	let privateKey = fs.readFileSync("./keys/key.pem");
+	let certificate = fs.readFileSync("./keys/cert.pem");
+	https.createServer({
+		key: privateKey,
+		cert: certificate
+	}, app).listen(port);  
+
+// "Production" HTTP - (for use behind https proxy)
+} else {
+	app.listen(port);
+
+}
+
 console.log(`Started app on port ${port}`);
 
 module.exports = app;
