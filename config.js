@@ -1,7 +1,7 @@
 // Base configuration
 let config = {
 	"port": 3000,
-	"origin": "https://localhost:3000",
+	"origin": "http://localhost:3000",
 	"rpId": "localhost",
 	"rpName": "Webauthn Prototype",
 	"mode": "development",

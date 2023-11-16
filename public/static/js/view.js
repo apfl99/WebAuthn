@@ -2,7 +2,6 @@
 /* exported loadMainContainer, checkIfLoggedIn */
 
 const renderMainContainer = (response) => {
-    
 	// Update name
 	$("#name").text(response.name);
     
@@ -10,7 +9,7 @@ const renderMainContainer = (response) => {
 	$("#credential-table tbody").html("");
 
 	for(let authenticator of response.authenticators) {        
-		$("#credential-table tbody").append("<tr><td><pre class\"pubkey\">" + authenticator.counter + "</pre></td><td><pre class=\"pubkey\">" + authenticator.publicKey + "</pre></td><td><pre class=\"pubkey\">" + new Date(authenticator.created).toLocaleString() + "</pre></td></tr>");
+		$("#credential-table tbody").append("<tr><td><pre class\"pubkey\">" + authenticator.counter + "</pre></td><td><pre class=\"pubkey\">" + authenticator.credentialPublicKey + "</pre></td><td><pre class=\"pubkey\">" + new Date(authenticator.Created).toLocaleString() + "</pre></td></tr>");
 	}
 
 	$("#login-token").hide();

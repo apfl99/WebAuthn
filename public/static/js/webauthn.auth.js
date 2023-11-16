@@ -1,6 +1,4 @@
-/* global base64, loadMainContainer, preformatMakeCredReq, preformatGetAssertReq, publicKeyCredentialToJSON */
-/* exported register, login */
-
+//  Registration Start
 let getMakeCredentialsChallenge = (formBody) => {
 	return fetch("webauthn/register", {
 		method: "POST",
@@ -19,8 +17,8 @@ let getMakeCredentialsChallenge = (formBody) => {
 		});
 };
 
-let sendWebAuthnResponse = (body) => {
-	return fetch("webauthn/response", {
+let sendRegistrationResponse = (body) => {
+	return fetch("webauthn/registrationResponse", {
 		method: "POST",
 		credentials: "include",
 		headers: {
@@ -37,6 +35,7 @@ let sendWebAuthnResponse = (body) => {
 		});
 };
 
+
 let getGetAssertionChallenge = (formBody) => {
 	return fetch("webauthn/login", {
 		method: "POST",
@@ -50,6 +49,24 @@ let getGetAssertionChallenge = (formBody) => {
 		.then((response) => {
 			if(response.status !== "ok")
 				throw new Error(`Server responed with error. The message is: ${response.message}`);
+			return response;
+		});
+};
+
+let sendAuthenticationResponse = (body) => {
+	return fetch("webauthn/authenticaitonResponse", {
+		method: "POST",
+		credentials: "include",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(body)
+	})
+		.then((response) => response.json())
+		.then((response) => {
+			if(response.status !== "ok")
+				throw new Error(`Server responed with error. The message is: ${response.message}`);
+
 			return response;
 		});
 };
@@ -76,7 +93,7 @@ function register (username) {
 				},
 				type: response.type
 			};
-			return sendWebAuthnResponse(makeCredResponse);
+			return sendRegistrationResponse(makeCredResponse);
 		})
 		.then((response) => {
 			if(response.status === "ok") {
@@ -85,21 +102,23 @@ function register (username) {
 				alert(`Server responed with error. The message is: ${response.message}`);
 			}
 		})
-		.catch((error) => alert(error));
 }
+
+
+  
+
+
 
 /* Handler for login form submission */
 function login(username) {
 	getGetAssertionChallenge({username})
 		.then((response) => {
-			let publicKey = preformatGetAssertReq(response);
-			console.log(publicKey)
-			return navigator.credentials.get( { publicKey } );
+			let publicKey  = preformatGetAssertReq(response);
+			return navigator.credentials.get( {publicKey} );
 		})
 		.then((response) => {
 			let getAssertionResponse = publicKeyCredentialToJSON(response);
-			console.log(getAssertionResponse)
-			return sendWebAuthnResponse(getAssertionResponse);
+			return sendAuthenticationResponse(getAssertionResponse);
 		})
 		.then((response) => {
 			if(response.status === "ok") {

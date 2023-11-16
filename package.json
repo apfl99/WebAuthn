@@ -5,6 +5,8 @@
   "main": "app.js",
   "dependencies": {
     "@hexagon/base64": "^1.0.11",
+    "@ownid/webauthn": "^1.0.0",
+    "@simplewebauthn/server": "^8.3.5",
     "body-parser": "^1.19.1",
     "cookie-session": "^2.0.0",
     "express": "^4.15.4",

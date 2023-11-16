@@ -22,8 +22,6 @@ let database = {
             'registered': false,
             'id': id,
             'authenticators': [],
-            'oneTimeToken': undefined,
-            'recoveryEmail': undefined
         } *//*
 	}
 };
