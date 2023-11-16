@@ -106,9 +106,6 @@ function register (username) {
 
 
   
-
-
-
 /* Handler for login form submission */
 function login(username) {
 	getGetAssertionChallenge({username})

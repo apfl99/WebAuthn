@@ -1,7 +1,6 @@
 const express  = require("express");
 const router   = express.Router();
 const database = require("../db/db");
-const token    = require("../utils/token");
 
 /* Returns if user is logged in */
 router.get("/isLoggedIn", (request, response) => {

@@ -9,7 +9,6 @@ const
 
 	defaultroutes 	= require("./routes/default"),
 	webuathnroutes  = require("./routes/webauthn"),
-	tokenroutes   	= require("./routes/token"),
 
 	app           	= express();
 
@@ -30,7 +29,6 @@ app.use(express.static(path.join(__dirname, "public/static")));
 // Routes
 app.use("/", defaultroutes);
 app.use("/webauthn", webuathnroutes);
-app.use("/token", tokenroutes);
 
 const port = config.port;
 
