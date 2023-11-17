@@ -34,10 +34,12 @@ router.get("/personalInfo", (request, response) => {
 		});
 	} else {
 		userInfo = database.getData("/users/"+ request.session.username);
+		siteInfos = database.getData("/users/"+ request.session.username + "/siteinfos");
 		response.json({
 			"status": "ok",
 			"authenticators": userInfo.authenticators,
-			"name": userInfo.name
+			"name": userInfo.name,
+			"siteinfos": siteInfos
 		});
 	}
 });

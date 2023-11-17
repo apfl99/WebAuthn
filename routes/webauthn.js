@@ -70,6 +70,7 @@ router.post("/register", async (request, response) => {
 				registered: false,
 				id: id,
 				authenticators: [],
+				siteinfos: []
 			}}, false);
 
 	let challengeMakeCred = await f2l.registration(usernameClean, name, id);
@@ -122,16 +123,17 @@ router.post("/registrationResponse", async (request, response) => {
 
 router.post("/login", async (request, response) => {
 
-	if(!request.body || !request.body.username) {
+	if(!request.session.loggedIn) {
 		response.json({
 			"status": "failed",
-			"message": "Request missing username field!"
+			"message": "Request missing websiteURL field!"
 		});
 
 		return;
 	}
 
-	let usernameClean = username.clean(request.body.username);
+	let usernameClean = username.clean(request.session.username);
+	
 	let db = database.getData("/");
 	if(!db.users[usernameClean] || !db.users[usernameClean].registered) {
 		response.json({
@@ -169,9 +171,12 @@ router.post("/login", async (request, response) => {
 
 
 router.post("/authenticaitonResponse", async (request, response) => {
+
 	if (!database.getData("/users/" + request.session.username + "/registered")) {
 		response.status(404).send(false);
 	}
+	const websiteURL = request.body.websiteURL;
+	delete request.body[websiteURL];
 
 	var authenticators = database.getData("/users/" + request.session.username + "/authenticators")[0];
 
@@ -199,8 +204,18 @@ router.post("/authenticaitonResponse", async (request, response) => {
  
 	const {verified} = verification;
 	if (verified) {
-		request.session.loggedIn = true;
-		return response.json({ "status": "ok" });
+		const fieldPath = "/users/" + request.session.username + "/siteinfos"
+		let siteinfos = database.getData(fieldPath);
+		let id, password;
+
+		for(let siteinfo of siteinfos) {        
+			if (siteinfo.siteURL == websiteURL) {
+				id = siteinfo.id;
+				password = siteinfo.password;
+			}
+		}
+
+		return response.json({ "status": "ok", "id": id, "password": password});
 	}
 
 	return response.json({
@@ -210,6 +225,31 @@ router.post("/authenticaitonResponse", async (request, response) => {
 });
 
 
+router.post("/registerUserinfo", async (request, response) => {
 
+	if(!request.body || !request.body.id || !request.body.password || !request.body.siteURL) {
+		response.json({
+			"status": "failed",
+			"message": "Request missing some field!"
+		});
+		return;
+	}
+
+	if (!database.getData("/users/" + request.session.username + "/registered")) {
+		response.status(404).send(false);
+	}
+
+	try {
+		const fieldPath = "/users/" + request.session.username + "/siteinfos"
+		let siteinfos = database.getData(fieldPath);
+		siteinfos.push(request.body);
+		database.push(fieldPath, siteinfos, true);
+
+		return response.json({ "status": "ok" });
+	} catch(e) {
+		return response.json({ "status": "failed",  "message": "DB fail!"});
+	}
+
+});
 
 module.exports = router;

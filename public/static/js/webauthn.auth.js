@@ -71,6 +71,23 @@ let sendAuthenticationResponse = (body) => {
 		});
 };
 
+let sendRegisterUserinfo = (body) => {
+	return fetch("webauthn/registerUserinfo", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(body)
+	})
+		.then((response) => response.json())
+		.then((response) => {
+			if(response.status !== "ok")
+				throw new Error(`Server responed with error. The message is: ${response.message}`);
+
+			return response;
+		});
+};
+
 /* Handle for register form submission */
 function register (username) {
     
@@ -107,22 +124,37 @@ function register (username) {
 
   
 /* Handler for login form submission */
-function login(username) {
-	getGetAssertionChallenge({username})
+function login(websiteURL) {
+
+	getGetAssertionChallenge({})
 		.then((response) => {
 			let publicKey  = preformatGetAssertReq(response);
 			return navigator.credentials.get( {publicKey} );
 		})
 		.then((response) => {
 			let getAssertionResponse = publicKeyCredentialToJSON(response);
+			getAssertionResponse["websiteURL"] = websiteURL;
 			return sendAuthenticationResponse(getAssertionResponse);
 		})
 		.then((response) => {
 			if(response.status === "ok") {
-				loadMainContainer();   
+				console.log(response)
+				$("#websiteId")[0].value = response.id;
+				$("#websitePassword")[0].value = response.password;
 			} else {
 				alert(`Server responed with error. The message is: ${response.message}`);
 			}
 		})
 		.catch((error) => alert(error));
+}
+
+function registerUserinfo(id, password, siteURL) {
+	sendRegisterUserinfo({id,password,siteURL})
+		.then((response)=> {
+			if(response.status === "ok") {
+				loadMainContainer();
+			} else {
+				alert(`Server responed with error. The message is: ${response.message}`);
+			}
+		})
 }

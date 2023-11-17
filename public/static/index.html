@@ -18,9 +18,9 @@
             <h2><i class="fas fa-user-ninja"></i>&nbsp;Enter username</h2>
             <input type="text" class="full" id="username" maxlength="25">
             <button class="button-primary fl half" id="button-register">Register</button>
-            <button class="button-primary fl half" id="button-login">Login</button>
         </div>
     </div>
+
 
     <!-- View when logged in -->
     <div id="mainContainer">
@@ -33,7 +33,42 @@
             </tbody>
         </table>
         <button id="button-logout" style="float: right;">Logout</button>
+        <button id="button-addUserinfo" style="float: right;">add UserInfo</button>
+        <button id="button-websiteLogin" style="float: right;">website Login</button>
+        <table id="userinfo-table">
+            <thead><th width="20%">ID</th><th>Password</th><th width="25%">Site URL</th></thead>
+            <tbody>
+
+            </tbody>
+        </table>
     </div>
+
+    <!-- View when addUserinfo -->
+    <div id="userinfoContainer" style="display: none;">
+        <div>
+            <h2><i class="fas fa-user-ninja"></i>&nbsp;ID</h2>
+            <input type="text" class="full" id="id" maxlength="25">
+            <h2><i class="fas fa-user-ninja"></i>&nbsp;Pasword</h2>
+            <input type="text" class="full" id="password" maxlength="25">
+            <h2><i class="fas fa-user-ninja"></i>&nbsp;Site URL</h2>
+            <input type="text" class="full" id="siteURL" maxlength="25">
+            <button class="button-primary fl" id="button-register-userinfo">Register Userinfo</button>
+        </div>
+    </div>
+
+    <!-- View when login -->
+    <div id="loginContainer" style="display: none;">
+        <div>
+            <h2><i class="fas fa-user-ninja"></i>&nbsp;Enter Website URL</h2>
+            <input type="text" class="full" id="websiteURL" maxlength="25">
+            <h2><i class="fas fa-user-ninja"></i>&nbsp;ID</h2>
+            <input type="text" class="full" id="websiteId" maxlength="25">
+            <h2><i class="fas fa-user-ninja"></i>&nbsp;Pasword</h2>
+            <input type="text" class="full" id="websitePassword" maxlength="25">
+            <button class="button-primary fl" id="button-autofill">AutoFill</button>
+        </div>
+    </div>
+
 
     <!-- Vanta net container -->
     <div id="background"></div>
