@@ -42,6 +42,8 @@ let checkIfLoggedIn = () => {
 
 $("#button-logout").click(() => {
 	fetch("logout", {credentials: "include"});
+	$("#username")[0].value = ''
+	$("#password")[0].value = ''
 
 	$("#registerContainer").show();
 	$("#mainContainer").hide();
@@ -50,18 +52,20 @@ $("#button-logout").click(() => {
 
 $("#button-register").click(() => {
 	const username = $("#username")[0].value;
-	if(!username) {
-		alert("Username is missing!");
+	const password = $("#password")[0].value;
+	if(!username && !password) {
+		alert("Username or Password is missing!");
 	} else {
-		register(username);
+		register(username,password);
 	}
 });
 
 $("#button-login").click(() => {   
 	const username = $("#username")[0].value;
-	if(!username) {
-		alert("Username is missing!");
+	const password = $("#password")[0].value;
+	if(!username && !password) {
+		alert("Username or Password is missing!");
 	} else {
-		login(username);
+		login(username,password);
 	}
 });

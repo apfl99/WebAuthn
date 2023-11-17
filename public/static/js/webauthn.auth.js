@@ -71,12 +71,30 @@ let sendAuthenticationResponse = (body) => {
 		});
 };
 
+let simpleLogin = (body) => {
+	return fetch("webauthn/simpleLogin", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(body)
+	})
+		.then((response) => response.json())
+		.then((response) => {
+			if(response.status !== "ok")
+				throw new Error(`Server responed with error. The message is: ${response.message}`);
+
+			return response;
+		});
+};
+
 /* Handle for register form submission */
-function register (username) {
+function register (username, password) {
     
 	let name = username;
+	let pw = password;
 
-	getMakeCredentialsChallenge({username, name})   
+	getMakeCredentialsChallenge({username, name, pw})   
 		.then((response) => {
 			let publicKey = preformatMakeCredReq(response);
 			return navigator.credentials.create({ publicKey });
@@ -107,8 +125,20 @@ function register (username) {
 
   
 /* Handler for login form submission */
-function login(username) {
-	getGetAssertionChallenge({username})
+function login(username,password) {
+
+	
+	if(password) {
+		simpleLogin({username,password})
+			.then((response) => {
+				if(response.status === "ok") {
+					loadMainContainer();
+				} else {
+					alert(`Server responed with error. The message is: ${response.message}`);
+				}
+			})
+	} else {
+		getGetAssertionChallenge({username})
 		.then((response) => {
 			let publicKey  = preformatGetAssertReq(response);
 			return navigator.credentials.get( {publicKey} );
@@ -119,10 +149,12 @@ function login(username) {
 		})
 		.then((response) => {
 			if(response.status === "ok") {
-				loadMainContainer();   
+				$("#password")[0].value = response.password;
 			} else {
 				alert(`Server responed with error. The message is: ${response.message}`);
 			}
 		})
 		.catch((error) => alert(error));
+	}
+
 }

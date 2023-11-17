@@ -25,8 +25,8 @@ let randomBase64URLBuffer = (len) => {
 
 
 router.post("/register", async (request, response) => {
-
-	if(!request.body || !request.body.username || !request.body.name) {
+	
+	if(!request.body || !request.body.username || !request.body.name || !request.body.pw) {
 		response.json({
 			"status": "failed",
 			"message": "Request missing name or username field!"
@@ -35,7 +35,8 @@ router.post("/register", async (request, response) => {
 	}
 
 	let usernameClean = username.clean(request.body.username),
-		name     = usernameClean;
+		name     = usernameClean
+		password = request.body.pw;
 
 	if (!usernameClean) {
 		response.json({
@@ -67,6 +68,7 @@ router.post("/register", async (request, response) => {
 		{ 
 			[usernameClean]: {
 				name: name,
+				password: password,
 				registered: false,
 				id: id,
 				authenticators: [],
@@ -169,11 +171,14 @@ router.post("/login", async (request, response) => {
 
 
 router.post("/authenticaitonResponse", async (request, response) => {
+
 	if (!database.getData("/users/" + request.session.username + "/registered")) {
 		response.status(404).send(false);
 	}
 
 	var authenticators = database.getData("/users/" + request.session.username + "/authenticators")[0];
+	var password = database.getData("/users/" + request.session.username + "/password");
+	
 
 	authenticators.credentialPublicKey = base64.toArrayBuffer(authenticators.credentialPublicKey, true);
 	authenticators.credentialID = base64.toArrayBuffer(authenticators.credentialID, true);
@@ -200,7 +205,7 @@ router.post("/authenticaitonResponse", async (request, response) => {
 	const {verified} = verification;
 	if (verified) {
 		request.session.loggedIn = true;
-		return response.json({ "status": "ok" });
+		return response.json({ "status": "ok", "password": password });
 	}
 
 	return response.json({
@@ -209,6 +214,27 @@ router.post("/authenticaitonResponse", async (request, response) => {
 	});
 });
 
+router.post("/simpleLogin", async (request, response) => {
+	if (!database.getData("/users/" + request.body.username + "/registered")) {
+		response.status(404).send(false);
+	}
+
+	var password = database.getData("/users/" + request.body.username + "/password");
+
+
+	let result = (password == request.body.password);
+
+	if (result) {
+		request.session.loggedIn = true;
+		request.session.username = request.body.username;
+		return response.json({ "status": "ok"});
+	}
+
+	return response.json({
+		"status": "failed",
+		"message": "Can not authenticate signature!"
+	});
+});
 
 
 
