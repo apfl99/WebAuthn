@@ -58,6 +58,6 @@ let preformatGetAssertReq = (getAssert) => {
 	for(let allowCred of getAssert.allowCredentials) {
 		allowCred.id = base64.toArrayBuffer(allowCred.id,true);
 	}
-
+	
 	return getAssert;
 };

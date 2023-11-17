@@ -9,7 +9,6 @@ const
 
 	defaultroutes 	= require("./routes/default"),
 	webuathnroutes  = require("./routes/webauthn"),
-	tokenroutes   	= require("./routes/token"),
 
 	app           	= express();
 
@@ -19,12 +18,10 @@ app.use(bodyParser.json());
 app.use(cookieSession({
 	name: "session",
 	keys: [crypto.randomBytes(32).toString("hex")],
-	//keys: database.getData("/keys"),
 	// Cookie Options
 	maxAge: config.cookieMaxAge
 }));
 
-//console.log(database.getData("/keys"));
 
 // Static files (./static)
 app.use(express.static(path.join(__dirname, "public/static")));
@@ -32,27 +29,13 @@ app.use(express.static(path.join(__dirname, "public/static")));
 // Routes
 app.use("/", defaultroutes);
 app.use("/webauthn", webuathnroutes);
-app.use("/token", tokenroutes);
 
 const port = config.port;
 
-// Local development
-if (config.mode === "development") {
-	const https = require("https");
-	const fs = require("fs");
-	let privateKey = fs.readFileSync("./keys/key.pem");
-	let certificate = fs.readFileSync("./keys/cert.pem");
-	https.createServer({
-		key: privateKey,
-		cert: certificate
-	}, app).listen(port);  
 
-// "Production" HTTP - (for use behind https proxy)
-} else {
-	app.listen(port);
+app.listen(3000, () => {
+	console.log(`Started app on port ${port}`);
+});
 
-}
-
-console.log(`Started app on port ${port}`);
 
 module.exports = app;
