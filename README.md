@@ -17,6 +17,12 @@ Google Chrome
 
 ![Untitled](screenshots/Untitled.png)
 
+## Result
+Waffle-extension captures the login data right before the page unloading.
+
+![test](screenshots/test.png)
+![result](screenshots/result.png)
+
 ## Reference
 
 [[Unsolved.wa 개발기 - 2] chrome extension 시작부터 끝까지 (oopy.io)](https://80000coding.oopy.io/34a2083b-c159-4524-b5f2-750d3ab4fbba)
