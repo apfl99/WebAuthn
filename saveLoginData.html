@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Uniwaffle-extension</title>
+  <script src="saveLoginData.js"></script>
+  <style>
+    body {
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Uniwaffle-extension</h1>
+  <h3>Save password</h3>
+  <form>
+    <label for="domain">Domain:</label>
+    <span id="domain"></span>
+    <br>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+    <br>
+    <label for="password">Password:</label>
+    <input type="text" id="password" name="password" required>
+    <br>
+    <button type="submit" id="submitButton" disabled>Save</button>
+    <button type="button" id="closeButton">Close</button>
+</form>
+</body>
+</html>
