@@ -23,10 +23,15 @@ window.addEventListener('click', function (event) {
   const loginButtonNames = ["log", "sign", "로그인"]
   const urlNames = ["lg", "auth", "log"]
   const url = window.location.href
-
-  if(loginButtonNames.some(function (name) { return event.target.innerText.includes(name)}) && urlNames.some(function (name) { return url.includes(name)})){
-    if(event.target.tagName === "BUTTON" || event.target.tagName === "A"){
-      chrome.runtime.sendMessage({ action: "loginTry", url: url})
+  
+  if(urlNames.some(function (name) { return url.includes(name)})){
+    if(loginButtonNames.some(function (name) { return event.target.innerText.includes(name)})){
+      if(event.target.tagName === "BUTTON" || event.target.tagName === "A"){
+        chrome.runtime.sendMessage({ action: "loginTry", url: url})
+      }
+    }
+    else{
+      chrome.runtime.sendMessage({ action: "loginReset" })
     }
   }
 });
@@ -77,7 +82,7 @@ window.addEventListener('load', function (event) {
 
   // 로그인 페이지인 경우에만 임시 서버에 데이터 요청
   if(loginUrlNames.some(function (name) { return window.location.href.includes(name)})){
-    xhr.open("GET", "https://demoworld.ddns.net/getData?domain="+domain, true)
+    xhr.open("GET", "http://localhost:3000/getData?domain="+domain, true)
     xhr.send()
   }
 });

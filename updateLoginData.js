@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://localhost:3000/send", true);
+    xhr.open("POST", "http://localhost:3000/update", true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify(data));
     window.close();

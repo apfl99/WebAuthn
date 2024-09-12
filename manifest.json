@@ -1,11 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Credential Saver",
+  "name": "Uniwaffle Extension",
   "version": "1.0",
   "description": "Save and display login credentials",
-  "permissions": ["storage", "activeTab", "webNavigation", "webRequest"],
+  "permissions": ["storage", "activeTab", "webNavigation", "webRequest", "identity"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
   "action": {
-    "default_popup": "saveLoginData.html",
+    "default_popup": "index.html",
     "default_icon": {
       "16": "images/icon16.png",
       "48": "images/icon48.png",
@@ -23,7 +26,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js", "utils.js", "base64.js"]
     }
   ]
 }

@@ -21,12 +21,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     if (request.action === "loginTry") {
       chrome.storage.sync.set({ loginTryUrl: request.url })
-    }  
+    }
+
+    if (request.action === "loginReset") {
+      if(result.loginTryUrl){
+        chrome.storage.sync.set({loginTryUrl: "" })
+      }
+      if(result.loginData["domain"]){
+        chrome.storage.sync.set({loginData: {domain: "", username: "", password: ""} })
+      }
+    }
   })
 });
 
 // 페이지 전환 시 로그인 성공 확인
-chrome.webNavigation.onCommitted.addListener(details => {
+chrome.webNavigation.onCompleted.addListener(details => {
   const loginUrlNames = ["lg", "auth", "log"]
   chrome.storage.sync.get({ loginData: {domain: "", username: "", password: ""}, loginTryUrl: "" }, function (result) {
     if (!details.url.startsWith("chrome://extensions") && !details.url.startsWith("about:blank")) {
@@ -35,7 +44,7 @@ chrome.webNavigation.onCommitted.addListener(details => {
         // 로그인 성공
         if(!(loginUrlNames.some(function (name) { return details.url.includes(name)}))){
           chrome.storage.sync.set({ loginTryUrl: "" });
-          fetch("https://demoworld.ddns.net/getData?domain="+result.loginData["domain"], {
+          fetch("http://localhost:3000/getData?username="+result.loginData["username"]+"&domain="+result.loginData["domain"], {
             method: "GET",
             headers: {
               "Content-Type": "application/json"
@@ -43,13 +52,23 @@ chrome.webNavigation.onCommitted.addListener(details => {
           })
           .then(response => response.json())
           .then(data => {
-            if(data.length === 0 && result.loginData["username"] && result.loginData["password"]){
-              chrome.windows.create({
-                type: "popup",
-                url: "saveLoginData.html",
-                width: 300,
-                height: 300
-              });
+            if(result.loginData["username"] && result.loginData["password"]){
+              if(data.length === 0){
+                chrome.windows.create({
+                  type: "popup",
+                  url: "saveLoginData.html",
+                  width: 300,
+                  height: 300
+                });
+              }
+              else if(data[0]["password"] != result.loginData["password"]){
+                chrome.windows.create({
+                  type: "popup",
+                  url: "updateLoginData.html",
+                  width: 300,
+                  height: 300
+                });
+              }
             }
           })
         }
